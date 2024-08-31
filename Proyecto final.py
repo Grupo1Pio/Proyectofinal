@@ -102,6 +102,6 @@ def menu_principal():
         else:
             print("Opción no válida, intente nuevamente.")
 
-# Ejecución del programa
+
 if __name__ == "__main__":
     menu_principal()
