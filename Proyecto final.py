@@ -1,5 +1,13 @@
 import pickle
 
+"""
+INTEGRANTES GRUPO#1
+JULIAN AGUDELO
+MATTEWS OROZCO
+ALEJANDRA URBANO
+MIGUEL CASTAÑO
+"""
+
 class SalaCine:
     def __init__(self, filas, columnas):
         """Inicializa una nueva sala de cine con las dimensiones dadas."""
@@ -7,19 +15,20 @@ class SalaCine:
         self.columnas = columnas
         self.sala = [['O' for _ in range(columnas)] for _ in range(filas)]  # 'O' representa un asiento desocupado
 
-    def mostrar_sala(self):
+    def mostrar_sala(self, nombre):
         """Muestra el estado actual de la sala."""
+        print(f"\n--- Sala: {nombre} ---")
         for fila in self.sala:
             print(' '.join(fila))
     
-    def asignar_asiento(self, fila, columna):
+    def asignar_asiento(self, fila, columna, nombre):
         """Asigna un asiento en la sala, si está disponible."""
         if 0 <= fila < self.filas and 0 <= columna < self.columnas:
             if self.sala[fila][columna] == 'O':
                 self.sala[fila][columna] = 'X'  # 'X' representa un asiento ocupado
-                print(f"Asiento en fila {fila+1}, columna {columna+1} asignado.")
+                print(f"Asiento en fila {fila+1}, columna {columna+1} asignado en la sala '{nombre}'.")
             else:
-                print("El asiento ya está ocupado.")
+                print(f"El asiento en fila {fila+1}, columna {columna+1} ya está ocupado en la sala '{nombre}'.")
         else:
             print("Posición fuera de rango.")
 
@@ -31,7 +40,7 @@ class SalaCine:
 
         with open(nombre_archivo + '.pkl', 'wb') as f:
             pickle.dump(self, f)
-        print(f"Sala guardada en {nombre_archivo}.txt y {nombre_archivo}.pkl.")
+        print(f"Sala '{nombre_archivo}' guardada en {nombre_archivo}.txt y {nombre_archivo}.pkl.")
 
     @staticmethod
     def cargar_sala(nombre_archivo):
@@ -39,7 +48,7 @@ class SalaCine:
         try:
             with open(nombre_archivo + '.pkl', 'rb') as f:
                 sala = pickle.load(f)
-            print(f"Sala cargada desde {nombre_archivo}.pkl.")
+            print(f"Sala '{nombre_archivo}' cargada desde {nombre_archivo}.pkl.")
             return sala
         except FileNotFoundError:
             print("Archivo no encontrado.")
@@ -48,6 +57,8 @@ class SalaCine:
 
 def menu_principal():
     salas = {}  # Diccionario para almacenar las salas creadas
+    sala_actual = None  # Variable para almacenar la sala actualmente seleccionada
+
     while True:
         print("\n--- Menú Principal ---")
         print("1. Crear nueva sala")
@@ -64,36 +75,35 @@ def menu_principal():
             columnas = int(input("Ingrese el número de columnas: "))
             nombre = input("Ingrese el nombre de la sala: ")
             salas[nombre] = SalaCine(filas, columnas)
+            sala_actual = nombre  # Actualizar la sala actualmente seleccionada
             print(f"Sala '{nombre}' creada con éxito.")
         
         elif opcion == '2':
-            nombre = input("Ingrese el nombre de la sala a mostrar: ")
-            if nombre in salas:
-                salas[nombre].mostrar_sala()
+            if sala_actual:
+                salas[sala_actual].mostrar_sala(sala_actual)
             else:
-                print("Sala no encontrada.")
+                print("No se ha seleccionado ninguna sala.")
         
         elif opcion == '3':
-            nombre = input("Ingrese el nombre de la sala: ")
-            if nombre in salas:
+            if sala_actual:
                 fila = int(input("Ingrese el número de fila: ")) - 1
                 columna = int(input("Ingrese el número de columna: ")) - 1
-                salas[nombre].asignar_asiento(fila, columna)
+                salas[sala_actual].asignar_asiento(fila, columna, sala_actual)
             else:
-                print("Sala no encontrada.")
+                print("No se ha seleccionado ninguna sala.")
 
         elif opcion == '4':
-            nombre = input("Ingrese el nombre de la sala a guardar: ")
-            if nombre in salas:
-                salas[nombre].guardar_sala(nombre)
+            if sala_actual:
+                salas[sala_actual].guardar_sala(sala_actual)
             else:
-                print("Sala no encontrada.")
+                print("No se ha seleccionado ninguna sala.")
         
         elif opcion == '5':
             nombre = input("Ingrese el nombre del archivo de la sala a cargar (sin extensión): ")
             sala = SalaCine.cargar_sala(nombre)
             if sala:
                 salas[nombre] = sala
+                sala_actual = nombre  # Actualizar la sala actualmente seleccionada
         
         elif opcion == '6':
             print("Saliendo del programa...")
